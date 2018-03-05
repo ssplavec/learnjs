@@ -8,9 +8,14 @@ learnjs.problems = [
   },
   {
     description: "Simple Math",
-    code: "functin problem() { return 42 === 6 * __; }"
+    code: "function problem() { return 42 === 6 * __; }"
   }
 ];
+
+learnjs.template = function(name) {
+  var template = $('.templates .' + name);
+  return template.clone();
+}
 
 learnjs.problemView = function(data) {
   var problemNumber = parseInt(data, 10);
@@ -27,7 +32,9 @@ learnjs.problemView = function(data) {
 
   function checkAnswerClick() {
     if (checkAnswer()) {
-      learnjs.flashElement(resultFlash,'Correct!');
+      var correctFlash = learnjs.template('correct-flash');
+      correctFlash.find('a').attr('href', '#problem-' + (problemNumber + 1));
+      learnjs.flashElement(resultFlash, correctFlash);
     } else {
       learnjs.flashElement(resultFlash,'Incorrect!');
     }

@@ -4,7 +4,7 @@ describe('LearnJS', function() {
     expect($('.view-container').length).toEqual(1);
   });
 
-  it('shows the landing page whern there is no hash', function() {
+  it('shows the landing page when there is no hash', function() {
     learnjs.showView('');
     expect($('.view-container .landing-view').length).toEqual(1);
   });
@@ -45,7 +45,7 @@ describe('LearnJS', function() {
       it('can check a correct answer by hitting a button', function() {
         view.find('.answer').val('true');
         view.find('.check-btn').click();
-        expect(view.find('.result').text()).toEqual('Correct!');
+        expect(view.find('.result').text()).toContain('Correct!');
       });
 
       it('rejects an incorrect answer', function() {
@@ -53,6 +53,14 @@ describe('LearnJS', function() {
         view.find('.check-btn').click();
         expect(view.find('.result').text()).toEqual('Incorrect!');
       });
+
+      it('has a link to the Next Problem when given a correct answer', function() {
+        view.find('.answer').val('true');
+        view.find('.check-btn').click();
+        expect(view.find('.result').text()).toContain('Next Problem');
+        expect(view.find('.result a').attr('href')).toEqual('#problem-2');
+      });
+
     });
   });
 
