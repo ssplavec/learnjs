@@ -12,6 +12,10 @@ learnjs.problems = [
   }
 ];
 
+learnjs.triggerEvent = function(name, args) {
+  $('.view-container>*').trigger(name, args);
+}
+
 learnjs.template = function(name) {
   var template = $('.templates .' + name);
   return template.clone();
@@ -48,9 +52,30 @@ learnjs.problemView = function(data) {
   view.find('.title').text('Problem #' + problemNumber);
   learnjs.applyObject(problemData, view);
 
+  if (problemNumber < learnjs.problems.length) {
+    var buttonItem = learnjs.template('skip-btn');
+    buttonItem.find('a').attr('href', '#problem-' + (problemNumber + 1));
+    $('.nav-list').append(buttonItem);
+    view.bind('removingView', function() {
+      buttonItem.remove();
+    });
+  }
+
   return view;
 }
 
+learnjs.flashElement = function(elem, content) {
+  elem.fadeOut('fast', function() {
+    elem.html(content);
+    elem.fadeIn();
+  });
+}
+
+learnjs.applyObject = function(obj, elem) {
+  for (var key in obj) {
+    elem.find('[data-name="' + key + '"]').text(obj[key]);
+  };
+}
 learnjs.buildCorrectFlash = function(problemNumber) {
   var correctFlash = learnjs.template('correct-flash');
   var link = correctFlash.find('a');
@@ -63,6 +88,13 @@ learnjs.buildCorrectFlash = function(problemNumber) {
   return correctFlash;
 }
 
+learnjs.appOnReady = function() {
+  window.onhashchange = function() {
+    learnjs.showView(window.location.hash);
+  };
+  learnjs.showView(window.location.hash);
+}
+
 learnjs.showView = function(hash) {
   var routes = {
     '#problem': learnjs.problemView,
@@ -72,26 +104,7 @@ learnjs.showView = function(hash) {
   var hashParts = hash.split('-');
   var viewFn = routes[hashParts[0]];
   if (viewFn) {
+    learnjs.triggerEvent('removingView', []);
     $('.view-container').empty().append(viewFn(hashParts[1]));
   }
-}
-
-learnjs.appOnReady = function() {
-  window.onhashchange = function() {
-    learnjs.showView(window.location.hash);
-  };
-  learnjs.showView(window.location.hash);
-}
-
-learnjs.applyObject = function(obj, elem) {
-  for (var key in obj) {
-    elem.find('[data-name="' + key + '"]').text(obj[key]);
-  };
-}
-
-learnjs.flashElement = function(elem, content) {
-  elem.fadeOut('fast', function() {
-    elem.html(content);
-    elem.fadeIn();
-  });
 }
